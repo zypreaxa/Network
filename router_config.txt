@@ -1,0 +1,133 @@
+Building configuration...
+
+Current configuration : 2125 bytes
+!
+! Last configuration change at 13:28:30 UTC Fri May 2 2025
+!
+version 15.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname Router
+!
+boot-start-marker
+boot-end-marker
+!
+!
+!
+no aaa new-model
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+ip cef
+no ipv6 cef
+multilink bundle-name authenticated
+!
+!
+cts logging verbose
+!
+!
+license udi pid CISCO2901/K9 sn FCZ193560N0
+!
+!
+!
+redundancy
+!
+!
+!
+!
+!
+!
+interface Embedded-Service-Engine0/0
+ no ip address
+ shutdown
+!
+interface GigabitEthernet0/0
+ ip address 192.168.8.8 255.255.255.0
+ ip nat outside
+ no ip virtual-reassembly in
+ duplex auto
+ speed auto
+!
+interface GigabitEthernet0/1
+ ip address 10.0.0.2 255.255.255.0
+ ip nat inside
+ no ip virtual-reassembly in
+ duplex auto
+ speed auto
+!
+interface Serial0/0/0
+ no ip address
+ shutdown
+ clock rate 2000000
+!
+interface Serial0/0/1
+ no ip address
+ shutdown
+ clock rate 2000000
+!
+ip default-gateway 192.168.8.254
+ip forward-protocol nd
+!
+no ip http server
+no ip http secure-server
+!
+ip nat inside source list 1 interface GigabitEthernet0/0 overload
+ip nat inside source route-map VLAN-NAT interface GigabitEthernet0/0 overload
+ip route 0.0.0.0 0.0.0.0 192.168.8.254
+ip route 192.168.10.0 255.255.255.0 10.0.0.1
+ip route 192.168.11.0 255.255.255.0 10.0.0.1
+ip route 192.168.12.0 255.255.255.0 10.0.0.1
+!
+ip access-list extended VLAN-SUBNETS
+ permit ip 192.168.10.0 0.0.0.255 any
+ permit ip 192.168.11.0 0.0.0.255 any
+ permit ip 192.168.12.0 0.0.0.255 any
+!
+!
+route-map VLAN-NAT permit 10
+ match ip address VLAN-SUBNETS
+!
+route-map VLAN-NAT permit 11
+ match ip address VLAN-SUBNETS
+!
+route-map VLAN-NAT permit 12
+ match ip address VLAN-SUBNETS
+!
+!
+access-list 1 permit 10.0.0.0 0.0.0.255
+access-list 1 permit 192.168.10.0 0.0.0.255
+access-list 1 permit 192.168.11.0 0.0.0.255
+access-list 1 permit 192.168.12.0 0.0.0.255
+!
+control-plane
+!
+!
+!
+line con 0
+line aux 0
+line 2
+ no activation-character
+ no exec
+ transport preferred none
+ transport output pad telnet rlogin lapb-ta mop udptn v120 ssh
+ stopbits 1
+line vty 0 4
+ login
+ transport input none
+!
+scheduler allocate 20000 1000
+!
+end
