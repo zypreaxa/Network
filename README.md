@@ -124,3 +124,11 @@ Proxmox has two CISCO WLC VMs for high availability:
 
 Proxmox also has a RADIUS authentication server:
 - TBD!!
+### LAG setup
+```WLC console
+interface range gi1/0/1 - 2
+channel-group 1 mode active
+interface port-channel 1
+switchport mode trunk
+switchport trunk native vlan 10
+```
