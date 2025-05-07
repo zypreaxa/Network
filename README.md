@@ -60,8 +60,10 @@ After running PuTTY, you should select the _Serial_ connection type and type in 
 
 ## Physical connections
 
+Network consists of 3 access points, an external router, a layer 3 switch, a computer with Proxmox VE installed housing 2 WLCs, a laptop with a Ubuntu OS on VMWARE housing freeRadius and two mobile phones to test wireless connectivity.
+
 ### Switch
-Configuration saved on switch.
+Configuration saved on switch.<br>
 Ports:
 - GigabitEthernet1/0/1-12 - VLAN 10, Service 192.168.10.55/24, mode access, spanning tree portfast
 - GigabitEthernet1/0/13-24 - VLAN 11, Management 192.168.11.55/24, mode access, spanning tree portfast
@@ -79,8 +81,8 @@ DHCP pools for each VLAN:
 
 
 ### Router
-Configuration saved outside of router. After every bootup configuration txt file should be copied and pasted in configure-terminal mode.
-After this initial configuration, both GigabitEthernet0/0 and GigabitEthernet0/1 should be set to no shutdown.
+Configuration saved outside of router. After every bootup, the configuration txt file should be copied and pasted in configure-terminal mode. <br>
+After this initial configuration, both GigabitEthernet0/0 and GigabitEthernet0/1 should be set to no shutdown.<br>
 
 Ports:
 - GigabitEthernet0/0 - 192.168.8.8/24, ip nat outside
@@ -121,12 +123,23 @@ Access lists:
 
 ### Proxmox
 Proxmox has two CISCO WLC VMs for high availability:
-- Main, 192.168.11.56/24
-- Failover, 192.168.11.57/24
+- Main, 192.168.11.56/24 (registered as primary on the access points)
+- Failover, 192.168.11.57/24 (cloned from the main one after all changes were completed and registered as secondary on the access points)
 
-Proxmox also has a RADIUS authentication server:
-- TBD!!
+A separate guest WLAN (connected to vlan 12) with no login details was created. However, no restrictions and security measures were implemented.
+
+### RADIUS
+RADIUS setup on the Proxmox environment failed, therefore it was implemented in a separate machine using VMWare.<br>
+After setup, the WLCs on Proxmox connected to it automatically. RADIUS was then manually integrated into the management WLAN through the WLC UI for enterprise authetication.<br>
+RADIUS setup was completed following this tutorial: https://www.youtube.com/watch?v=7dfWP9jvFfU&t=714s<br>
+RADIUS manual connection extablishing was completed following this tutorial: https://www.cisco.com/c/en/us/support/docs/wireless-mobility/wireless-lan-wlan/211263-Configure-802-1x-PEAP-with-FreeRadius.html<br>
+
+### QoS
+VoIP/video prioritisation was configured through the WLC UI by setting the priority standard to Gold (video) in the WLAN settings.
+
 ### LAG setup
+While not setup directly, due to being unnecessary given the fact that the computer housing the WLCs was communicating through one port only, it can be setup by configuring it in the WLC terminals and UI.<br>
+Additionally the following commands would need to be executed in the switch cli (note: these commands are templates and would need to be adjusted to fit the used switch ports and vlans):
 ``` WLC console
 interface range gi1/0/1 - 2
 channel-group 1 mode active
