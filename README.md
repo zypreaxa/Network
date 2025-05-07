@@ -22,6 +22,8 @@
 
 - Make sure each AP is on its own VLAN.
 
+- The AP's should have the AP mode set to FlexConnect.
+
 - Connect the network to a router for internet access.
 ### Authentication and guest access
 
@@ -125,7 +127,7 @@ Proxmox has two CISCO WLC VMs for high availability:
 Proxmox also has a RADIUS authentication server:
 - TBD!!
 ### LAG setup
-```WLC console
+``` WLC console
 interface range gi1/0/1 - 2
 channel-group 1 mode active
 interface port-channel 1
